@@ -2,13 +2,13 @@ import { createColumnHelper } from "@tanstack/react-table";
 import Table from "../components/Table";
 import type { Command, CommandHistory } from "../utils/types";
 import { useCommandHistory } from "../hooks/useCommandHistory";
-import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const columnHelper = createColumnHelper<CommandHistory>();
 
+const API_DOMAIN = "http://localhost:8001"
+
 const columns = [
-  // TODO: (STEP 8) Define the columns needed for the CommandHistory table.
   columnHelper.accessor("command_id",{
     header: "Command ID"
   }),
@@ -28,26 +28,25 @@ const columns = [
  * @return tsx element of CommandHistory component
  */
 function CommandHistoryPage() {
-  // TODO: (STEP 8) Fetch the command history with useCommandHistory and pass the resulting
-  // CommandHistory[] directly to the Table component.
-  //
   // The page must provide a way for the user to select which command's audit log they want to view.
   // The selected command should determine which command history is fetched.
   // The table should communicate that this is an audit log.
   // The table should be centred on the page.
   const [commandId, setCommandId] = useState("");
 
-  const { data: allCommands } = useQuery<Command[]>({
-    queryKey: ["allCommands"],
-    queryFn: async () => {
-      const response = await fetch(`http://localhost:8001/api/commands/`);
+  const [allCommands, setAllCommands] = useState<Command[]>([]);
+
+  useEffect(() => {
+    async function getCommands() {
+      const response = await fetch(API_DOMAIN + "/api/commands/");
       if (!response.ok) {
         throw new Error("Commands couldn't be fetched.");
       }
       const json = await response.json();
-      return json.data;
-    },
-  })
+      setAllCommands(json.data);
+    }
+    getCommands();
+  }, []);
 
   const { data, isLoading, isError } = useCommandHistory(commandId);
   return (
