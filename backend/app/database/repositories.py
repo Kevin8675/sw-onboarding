@@ -32,4 +32,6 @@ class CommandHistoryRepository(AbstractRepository[CommandHistory, UUID]):
         Get the entire history of a command by its UUID, sorted by latest first.
         """
         # TODO: (STEP 1) Implement this stub!
-        return []
+        history = await self.get_all_by(command_id=command_id)
+        sorted_history = sorted(history, key=lambda entry: entry.created_at, reverse=True)
+        return sorted_history
