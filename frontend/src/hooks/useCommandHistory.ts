@@ -4,7 +4,7 @@ import type { CommandHistory } from "../utils/types";
 
 const REFETCH_INTERVAL = 1000;
 
-const API_DOMAIN = "http://localhost:8001"
+const API_DOMAIN = "http://localhost:8001";
 
 export function useCommandHistory(
   commandId: string,
@@ -14,7 +14,9 @@ export function useCommandHistory(
   return useQuery({
     queryKey: ["commandHistory", commandId],
     queryFn: async () => {
-      const response = await fetch(API_DOMAIN + `/api/commands/${commandId}/history`);
+      const response = await fetch(
+        API_DOMAIN + `/api/commands/${commandId}/history`,
+      );
       if (!response.ok) {
         throw new Error("Command history couldn't be fetched.");
       }

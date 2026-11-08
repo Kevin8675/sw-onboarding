@@ -6,20 +6,20 @@ import { useState, useEffect } from "react";
 
 const columnHelper = createColumnHelper<CommandHistory>();
 
-const API_DOMAIN = "http://localhost:8001"
+const API_DOMAIN = "http://localhost:8001";
 
 const columns = [
-  columnHelper.accessor("command_id",{
-    header: "Command ID"
+  columnHelper.accessor("command_id", {
+    header: "Command ID",
   }),
-  columnHelper.accessor("status",{
-    header: "Status"
+  columnHelper.accessor("status", {
+    header: "Status",
   }),
-  columnHelper.accessor("params",{
-    header: "Parameters"
+  columnHelper.accessor("params", {
+    header: "Parameters",
   }),
-  columnHelper.accessor("created_at",{
-    header: "Created at"
+  columnHelper.accessor("created_at", {
+    header: "Created at",
   }),
 ];
 
@@ -38,12 +38,16 @@ function CommandHistoryPage() {
 
   useEffect(() => {
     async function getCommands() {
-      const response = await fetch(API_DOMAIN + "/api/commands/");
-      if (!response.ok) {
-        throw new Error("Commands couldn't be fetched.");
+      try {
+        const response = await fetch(API_DOMAIN + "/api/commands/");
+        if (!response.ok) {
+          throw new Error("Commands couldn't be fetched.");
+        }
+        const json = await response.json();
+        setAllCommands(json.data);
+      } catch (error) {
+        console.error("Caught rejection:", error);
       }
-      const json = await response.json();
-      setAllCommands(json.data);
     }
     getCommands();
   }, []);
@@ -52,8 +56,8 @@ function CommandHistoryPage() {
   return (
     <div className="flex flex-col items-center gap-4">
       <h1 className="text-4xl">Command Audit Log</h1>
-      { isLoading && <p className="text-blue-400">Loading audit log...</p> }
-      { isError && <p className="text-red-500">Error loading audit log</p>}
+      {isLoading && <p className="text-blue-400">Loading audit log...</p>}
+      {isError && <p className="text-red-500">Error loading audit log</p>}
       <select
         value={commandId}
         onChange={(e) => setCommandId(e.target.value)}
@@ -66,9 +70,9 @@ function CommandHistoryPage() {
           </option>
         ))}
       </select>
-      <Table data={data ?? []} columns={columns}/>
+      <Table data={data ?? []} columns={columns} />
     </div>
-  )
+  );
 }
 
 export default CommandHistoryPage;
